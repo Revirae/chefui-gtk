@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <gresources>
   <gresource prefix="/org/gtk_rs/chef/">
-    <file compressed="true" preprocess="xml-stripblanks">chef.ui</file>
+    <file compressed="true" preprocess="xml-stripblanks">chef.xml</file>
   </gresource>
 </gresources>
 

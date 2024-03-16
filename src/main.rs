@@ -3,11 +3,14 @@ mod window;
 use adw::prelude::*;
 use adw::Application;
 use gtk::{gio, glib};
+// use tracing::info;
 use window::ChefApp;
 
 const APP_ID: &str = "org.gtk_rs.chef";
 
 fn main() -> glib::ExitCode {
+    tracing_subscriber::fmt::init();
+
     gio::resources_register_include!(
         "chef_1.gresource"
     )

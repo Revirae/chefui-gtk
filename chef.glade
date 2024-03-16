@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Generated with glade 3.40.0 -->
 <interface>
-  <template class="ChefApp" parent="AdwApplicationWindow">
-    <property name="content">
+  <requires lib="gtk+" version="3.24"/>
+  <object class="GtkApplicationWindow">
+    <property name="can-focus">False</property>
+    <child>
       <object class="GtkBox">
         <property name="visible">True</property>
         <property name="can-focus">False</property>
@@ -14,6 +16,11 @@
             <property name="halign">center</property>
             <property name="stack">main_stack</property>
           </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">0</property>
+          </packing>
         </child>
         <child>
           <object class="GtkStack" id="main_stack">
@@ -24,6 +31,11 @@
               <placeholder/>
             </child>
           </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">1</property>
+          </packing>
         </child>
         <child>
           <object class="GtkStatusbar">
@@ -33,9 +45,16 @@
             <property name="margin-end">10</property>
             <property name="margin-top">6</property>
             <property name="margin-bottom">6</property>
+            <property name="orientation">vertical</property>
+            <property name="spacing">2</property>
           </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">2</property>
+          </packing>
         </child>
       </object>
-    </property>
-  </template>
+    </child>
+  </object>
 </interface>

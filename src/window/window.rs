@@ -1,12 +1,13 @@
 use adw::prelude::*;
 use adw::subclass::prelude::*;
-use gtk::glib;
 use gtk::glib::subclass::InitializingObject;
+use gtk::{glib, Stack};
 
 #[derive(gtk::CompositeTemplate, Default)]
-#[template(resource = "/org/gtk_rs/chef/chef.ui")]
+#[template(resource = "/org/gtk_rs/chef/chef.xml")]
 pub struct ChefApp {
-    // #[template_child]
+    #[template_child]
+    pub stack: TemplateChild<Stack>,
     // pub button: TemplateChild<gtk::Button>,
 }
 
@@ -14,6 +15,9 @@ pub struct ChefApp {
 impl ChefApp {
     #[template_callback]
     fn exit_app(_button: &gtk::Button) {}
+
+    // #[template_callback]
+    // fn
 }
 
 #[glib::object_subclass]
