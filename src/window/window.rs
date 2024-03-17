@@ -20,6 +20,12 @@ pub struct ChefApp {
     #[template_child]
     pub entry_brand: TemplateChild<adw::EntryRow>,
     #[template_child]
+    pub entry_cost: TemplateChild<adw::EntryRow>,
+    #[template_child]
+    pub entry_weight: TemplateChild<adw::EntryRow>,
+    #[template_child]
+    pub entry_volume: TemplateChild<adw::EntryRow>,
+    #[template_child]
     pub button_submit: TemplateChild<Button>,
     //----
     pub food_collections: OnceCell<ListStore>,

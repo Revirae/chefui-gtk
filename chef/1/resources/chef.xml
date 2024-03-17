@@ -25,6 +25,21 @@
                           </object>
                         </child>
                         <child>
+                          <object class="AdwEntryRow" id="entry_cost">
+                            <property name="title">Preço</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="AdwEntryRow" id="entry_weight">
+                            <property name="title">Peso</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="AdwEntryRow" id="entry_volume">
+                            <property name="title">Volume</property>
+                          </object>
+                        </child>
+                        <child>
                           <object class="GtkButton" id="button_submit">
                             <property name="label">submit</property>
                           </object>

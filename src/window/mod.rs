@@ -1,24 +1,22 @@
 mod window;
 
-use adw::ActionRow;
-use gio::{ActionGroup, ActionMap};
-use glib::Object;
-use gtk::glib::clone;
-use gtk::glib::subclass::types::ObjectSubclassIsExt;
+use adw::prelude::*;
+use adw::subclass::prelude::*;
+use gtk::gio::{ActionGroup, ActionMap, ListStore};
+use gtk::glib::Object;
+use gtk::glib::{clone, wrapper};
+// use gtk::prelude::*;
+use gtk::{glib, Label};
 use gtk::{
-    gio, glib, pango, FilterListModel, Label,
-    ListBoxRow, NoSelection,
-};
-use gtk::{prelude::*, CustomFilter};
-use gtk::{
-    Accessible, Buildable, ConstraintTarget, Native,
-    ShortcutManager,
+    Accessible, Box, Buildable, ConstraintTarget,
+    CustomFilter, FilterListModel, Native,
+    NoSelection, ShortcutManager,
 };
 
 use crate::food::FoodObject;
 use crate::food_collection::FoodCollection;
 
-glib::wrapper! {
+wrapper! {
     pub struct ChefApp(ObjectSubclass<window::ChefApp>)
         @extends adw::ApplicationWindow, adw::Window,
                  gtk::Window, gtk::Widget,
@@ -34,7 +32,7 @@ impl ChefApp {
             .build()
     }
 
-    pub fn foodlist(&self) -> gio::ListStore {
+    pub fn foodlist(&self) -> ListStore {
         let app = self.imp();
         app.current_fc
             .borrow()
@@ -43,7 +41,7 @@ impl ChefApp {
             .foodlist()
     }
 
-    pub fn foodcollections(&self) -> gio::ListStore {
+    pub fn foodcollections(&self) -> ListStore {
         let app = self.imp();
         app.food_collections
             .get()
@@ -64,14 +62,32 @@ impl ChefApp {
             app.entry_brand.text().to_string();
         app.entry_brand.set_text("");
 
-        let new_food =
-            FoodObject::new(name, brand, 0, 0, 0);
+        let cost: String =
+            app.entry_cost.text().into();
+        let cost: f32 =
+            cost.parse().unwrap_or_default();
+        let cost: u32 = (cost * 100.) as u32;
+
+        let weight: String =
+            app.entry_weight.text().into();
+        let weight: u32 =
+            weight.parse().unwrap_or_default();
+
+        let volume: String =
+            app.entry_volume.text().into();
+        let volume: u32 =
+            volume.parse().unwrap_or_default();
+
+        app.entry_cost.set_text("");
+
+        let new_food = FoodObject::new(
+            name, brand, cost, weight, volume,
+        );
         self.foodlist().append(&new_food);
     }
 
     fn new_collection(&self) {
-        let foodlist =
-            gio::ListStore::new::<FoodObject>();
+        let foodlist = ListStore::new::<FoodObject>();
 
         let name = "test".to_owned();
         let foodlist =
@@ -101,7 +117,7 @@ impl ChefApp {
     fn setup_collections(&self) {
         let app = self.imp();
         let collections =
-            gio::ListStore::new::<FoodCollection>();
+            ListStore::new::<FoodCollection>();
         app.food_collections
             .set(collections.clone())
             .expect("failed to set collections");
@@ -119,10 +135,54 @@ impl ChefApp {
         &self,
         food_object: &FoodObject,
     ) -> adw::ActionRow {
-        let row = ActionRow::builder().build();
+        let content = Box::builder().build();
+
+        let label_cost = Label::builder().build();
+        content.append(&label_cost);
+
+        let label_weight = Label::builder().build();
+        content.append(&label_weight);
+
+        let label_volume = Label::builder().build();
+        content.append(&label_volume);
+
+        let row = adw::ActionRow::builder().build();
+        row.add_suffix(&content);
 
         food_object
             .bind_property("name", &row, "title")
+            .sync_create()
+            .build();
+
+        food_object
+            .bind_property("brand", &row, "subtitle")
+            .sync_create()
+            .build();
+
+        food_object
+            .bind_property(
+                "cost",
+                &label_cost,
+                "label",
+            )
+            .sync_create()
+            .build();
+
+        food_object
+            .bind_property(
+                "weight",
+                &label_weight,
+                "label",
+            )
+            .sync_create()
+            .build();
+
+        food_object
+            .bind_property(
+                "volume",
+                &label_volume,
+                "label",
+            )
             .sync_create()
             .build();
 
