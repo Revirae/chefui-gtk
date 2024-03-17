@@ -353,6 +353,7 @@ dependencies = [
  "glib-build-tools",
  "gtk4",
  "libadwaita",
+ "serde",
  "tracing",
  "tracing-subscriber",
 ]

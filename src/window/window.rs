@@ -1,14 +1,23 @@
+use std::cell::{OnceCell, RefCell};
+
 use adw::prelude::*;
 use adw::subclass::prelude::*;
+use gtk::gio::ListStore;
 use gtk::glib::subclass::InitializingObject;
-use gtk::{glib, Stack};
+use gtk::{glib, ListBox, Stack};
+
+use crate::food_collection::FoodCollection;
 
 #[derive(gtk::CompositeTemplate, Default)]
 #[template(resource = "/org/gtk_rs/chef/chef.xml")]
 pub struct ChefApp {
     #[template_child]
     pub stack: TemplateChild<Stack>,
+    #[template_child]
+    pub food_list: TemplateChild<ListBox>,
     // pub button: TemplateChild<gtk::Button>,
+    pub food_collections: OnceCell<ListStore>,
+    pub current_fc: RefCell<Option<FoodCollection>>,
 }
 
 #[gtk::template_callbacks]
