@@ -13,8 +13,22 @@
                   <object class="GtkBox">
                     <property name="orientation">horizontal</property>
                     <child>
-                      <object class="GtkButton">
-                        <property name="label">Test</property>
+                      <object class="GtkListBox">
+                        <child>
+                          <object class="AdwEntryRow" id="entry_name">
+                            <property name="title">Nome</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="AdwEntryRow" id="entry_brand">
+                            <property name="title">Marca</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkButton" id="button_submit">
+                            <property name="label">submit</property>
+                          </object>
+                        </child>
                       </object>
                     </child>
                     <child>

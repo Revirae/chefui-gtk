@@ -15,7 +15,11 @@ pub struct ChefApp {
     pub stack: TemplateChild<Stack>,
     #[template_child]
     pub food_list: TemplateChild<ListBox>,
-    // pub button: TemplateChild<gtk::Button>,
+    #[template_child]
+    pub entry_name: TemplateChild<adw::EntryRow>,
+    #[template_child]
+    pub entry_brand: TemplateChild<adw::EntryRow>,
+    //----
     pub food_collections: OnceCell<ListStore>,
     pub current_fc: RefCell<Option<FoodCollection>>,
 }
@@ -48,8 +52,9 @@ impl ObjectSubclass for ChefApp {
 impl ObjectImpl for ChefApp {
     fn constructed(&self) {
         self.parent_constructed();
-        // let obj = self.obj();
-        // obj.setup_settings();
+        let obj = self.obj();
+        obj.setup();
+        obj.setup_collections();
         // obj.setup_callbacks();
         // obj.setup_users();
         // obj.setup_actions();
