@@ -6,7 +6,8 @@ use gtk::gio::ListStore;
 use gtk::glib::subclass::InitializingObject;
 use gtk::{glib, Button, ListBox, Stack};
 
-use crate::food_collection::FoodCollection;
+use crate::collection::FoodCollection;
+use crate::cuisine::Store;
 
 #[derive(gtk::CompositeTemplate, Default)]
 #[template(resource = "/org/gtk_rs/chef/chef.xml")]
@@ -28,8 +29,10 @@ pub struct ChefApp {
     #[template_child]
     pub button_submit: TemplateChild<Button>,
     //----
-    pub food_collections: OnceCell<ListStore>,
-    pub current_fc: RefCell<Option<FoodCollection>>,
+    pub collections: OnceCell<ListStore>,
+    pub main_fc: RefCell<Option<FoodCollection>>,
+    //-----
+    pub store: OnceCell<Store>,
 }
 
 #[gtk::template_callbacks]
@@ -69,6 +72,8 @@ impl ObjectImpl for ChefApp {
     fn constructed(&self) {
         self.parent_constructed();
         let obj = self.obj();
+        obj.setup_database();
+        obj.load_database();
         obj.setup_collections();
         obj.setup();
         // obj.setup_callbacks();
@@ -87,7 +92,28 @@ impl ObjectImpl for ChefApp {
 impl WidgetImpl for ChefApp {}
 
 impl AdwWindowImpl for ChefApp {}
-impl WindowImpl for ChefApp {}
+impl WindowImpl for ChefApp {
+    fn close_request(&self) -> glib::Propagation {
+        let store = self
+            .store
+            .get()
+            .expect("failed to retrieve store");
+
+        if let Some(foodlist) =
+            self.main_fc.clone().into_inner()
+        {
+            let _ = store
+                .send_food(
+                    foodlist.to_collection_data(),
+                )
+                .is_err_and(|e| {
+                    eprintln!("{:?}", e);
+                    true
+                });
+        }
+        self.parent_close_request()
+    }
+}
 
 impl AdwApplicationWindowImpl for ChefApp {}
 impl ApplicationWindowImpl for ChefApp {}

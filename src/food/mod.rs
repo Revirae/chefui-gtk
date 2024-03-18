@@ -1,6 +1,5 @@
 mod food;
 
-// use adw::subclass::prelude::*;
 use glib::Object;
 use gtk::glib::{
     self, subclass::types::ObjectSubclassIsExt,
@@ -42,6 +41,10 @@ impl FoodObject {
     }
 }
 
+pub enum Ingredient {
+    FoodPortion(Food, usize),
+}
+
 #[derive(Default, Clone, Serialize, Deserialize)]
 pub struct Food {
     pub name: String,
@@ -49,4 +52,46 @@ pub struct Food {
     pub cost: u32,
     pub weight: u32,
     pub volume: u32,
+}
+
+impl Food {
+    pub fn amount(&self) -> u32 {
+        if self.weight > 0 {
+            self.weight
+        } else {
+            self.volume
+        }
+    }
+    pub fn as_ingredient(
+        &self,
+        amount: usize,
+    ) -> Ingredient {
+        Ingredient::FoodPortion(self.clone(), amount)
+    }
+}
+
+impl Ingredient {
+    fn title(&self) -> String {
+        match self {
+            Ingredient::FoodPortion(food, _) => {
+                food.name.clone()
+            }
+        }
+    }
+    fn subtitle(&self) -> String {
+        match self {
+            Ingredient::FoodPortion(food, _) => {
+                food.brand.clone()
+            }
+        }
+    }
+    fn cost(&self) -> usize {
+        match self {
+            Ingredient::FoodPortion(food, amount) => {
+                let ratio = (*amount as f32)
+                    / (food.amount() as f32);
+                ((food.cost as f32) * ratio) as usize
+            }
+        }
+    }
 }

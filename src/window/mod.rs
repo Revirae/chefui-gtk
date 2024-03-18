@@ -1,3 +1,4 @@
+// mod food;
 mod window;
 
 use adw::prelude::*;
@@ -5,7 +6,6 @@ use adw::subclass::prelude::*;
 use gtk::gio::{ActionGroup, ActionMap, ListStore};
 use gtk::glib::Object;
 use gtk::glib::{clone, wrapper};
-// use gtk::prelude::*;
 use gtk::{glib, Label};
 use gtk::{
     Accessible, Box, Buildable, ConstraintTarget,
@@ -13,8 +13,9 @@ use gtk::{
     NoSelection, ShortcutManager,
 };
 
+use crate::collection::FoodCollection;
+use crate::cuisine::Store;
 use crate::food::FoodObject;
-use crate::food_collection::FoodCollection;
 
 wrapper! {
     pub struct ChefApp(ObjectSubclass<window::ChefApp>)
@@ -34,16 +35,16 @@ impl ChefApp {
 
     pub fn foodlist(&self) -> ListStore {
         let app = self.imp();
-        app.current_fc
+        app.main_fc
             .borrow()
             .clone()
             .expect("current collection not set")
             .foodlist()
     }
 
-    pub fn foodcollections(&self) -> ListStore {
+    pub fn collections(&self) -> ListStore {
         let app = self.imp();
-        app.food_collections
+        app.collections
             .get()
             .expect("`collections` should be set in `setup_collections`")
             .clone()
@@ -93,7 +94,7 @@ impl ChefApp {
         let foodlist =
             FoodCollection::new(&name, foodlist);
 
-        self.foodcollections().append(&foodlist);
+        self.collections().append(&foodlist);
         self.set_current_collection(foodlist);
     }
 
@@ -101,10 +102,6 @@ impl ChefApp {
         &self,
         obj: &FoodCollection,
     ) -> adw::ActionRow {
-        // let label_name = Label::builder()
-        // .ellipsize(pango::EllipsizeMode::End)
-        // .xalign(0.0)
-        // .build();
         let row = adw::ActionRow::new();
 
         obj.bind_property("name", &row, "title")
@@ -116,11 +113,15 @@ impl ChefApp {
 
     fn setup_collections(&self) {
         let app = self.imp();
-        let collections =
-            ListStore::new::<FoodCollection>();
-        app.food_collections
-            .set(collections.clone())
-            .expect("failed to set collections");
+        // let collections =
+        // ListStore::new::<FoodCollection>();
+
+        let collections = self.collections();
+
+        // app.collections
+        // .set(collections.clone())
+        // .expect("failed to set collections");
+
         app.food_list.bind_model(
             Some(&collections),
             clone!(@weak self as window => @default-panic, move |food| {
@@ -209,7 +210,7 @@ impl ChefApp {
             row.upcast()
         }));
 
-        app.current_fc.replace(Some(collection));
+        app.main_fc.replace(Some(collection));
     }
 
     fn filter(&self) -> Option<CustomFilter> {
@@ -229,22 +230,47 @@ impl ChefApp {
         None
     }
 
+    pub fn setup_database(&self) {
+        let app = self.imp();
+
+        let filename = "./chef.sqlite".to_owned();
+        let store = Store::load_or_init(filename)
+            .expect("faile do load or init store");
+        app.store
+            .set(store)
+            .expect("failed to setup database");
+    }
+
+    pub fn load_database(&self) {
+        let app = self.imp();
+
+        let store = app.store.get().expect(
+            "failed to get store to load database, 
+            was database set up before loading?",
+        );
+
+        let collections =
+            ListStore::new::<FoodCollection>();
+
+        if let Ok(data) = store.get_food() {
+            let collection =
+                FoodCollection::from_collection_data(
+                    data,
+                );
+            // self.collections()
+            collections.append(&collection);
+            self.set_current_collection(collection);
+        }
+
+        app.collections
+            .set(collections.clone())
+            .expect("failed to set collections");
+    }
+
     pub fn setup(&self) {
         let app = self.imp();
 
-        // ActionGroupExt::activate_action(
-        //     self,
-        //     "chef.new-collection",
-        //     None,
-        // );
-        // spawn_blocking(self.new_collection);
-        // self.add_action()
-        // println!("{:?}", self.list_actions());
-        // .expect(
-        // "failed to create initial collection",
-        // );
-
-        self.new_collection();
+        // self.new_collection();
         app.stack.set_visible_child_name("main");
 
         app.button_submit.connect_clicked(

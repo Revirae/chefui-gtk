@@ -1,5 +1,6 @@
+mod collection;
+mod cuisine;
 mod food;
-mod food_collection;
 mod window;
 
 use adw::prelude::*;
