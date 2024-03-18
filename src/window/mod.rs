@@ -111,22 +111,39 @@ impl ChefApp {
         row
     }
 
+    // fn create_food_row(
+    //     &self,
+    //     food_object: &FoodObject,
+    // ) -> adw::ActionRow {
+    //     let row = adw::ActionRow::builder().build();
+
+    //     food_object
+    //         .bind_property("name", &row, "name")
+    //         .sync_create()
+    //         .build();
+
+    //     row
+    // }
+
     fn setup_collections(&self) {
         let app = self.imp();
         // let collections =
         // ListStore::new::<FoodCollection>();
 
-        let collections = self.collections();
-
+        // let collection =
+        // app.main_fc.borrow().unwrap();
+        // let collection = app.main_fc.into_inner();
+        let collection = self.foodlist();
         // app.collections
         // .set(collections.clone())
         // .expect("failed to set collections");
 
         app.food_list.bind_model(
-            Some(&collections),
-            clone!(@weak self as window => @default-panic, move |food| {
-                let collection_object = food.downcast_ref().expect("the object should be of type `CollectionObject`");
-                let row = window.create_collection_row(collection_object);
+            Some(&collection),
+            clone!(
+                @weak self as window => @default-panic, move |food| {
+                let food_object = food.downcast_ref().expect("the object should be of type `CollectionObject`");
+                let row = window.create_food_row(food_object);
                 row.upcast()
             })
         )
@@ -204,11 +221,17 @@ impl ChefApp {
         let selection_model =
             NoSelection::new(Some(filter_model));
 
-        app.food_list.bind_model(Some(&selection_model),clone!(@weak self as window => @default-panic, move |obj| {
-            let food_object = obj.downcast_ref().expect("the object should be of type `FoodObject`");
-            let row = window.create_food_row(food_object);
-            row.upcast()
-        }));
+        app.food_list.bind_model(
+            Some(&selection_model),
+            clone!(@weak self as window => @default-panic, move |obj| {
+                let food_object = obj
+                    .downcast_ref()
+                    .expect("the object should be 
+                        of type `FoodObject`");
+                let row = window.create_food_row(food_object);
+                row.upcast()
+            })
+        );
 
         app.main_fc.replace(Some(collection));
     }

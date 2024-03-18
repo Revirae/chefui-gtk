@@ -1,3 +1,6 @@
+#![allow(dead_code)]
+#![allow(unused_imports)]
+
 use crate::collection::FoodCollectionData;
 use crate::food::{Food, Ingredient};
 

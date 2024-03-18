@@ -14,6 +14,8 @@ use crate::cuisine::Store;
 pub struct ChefApp {
     #[template_child]
     pub stack: TemplateChild<Stack>,
+    // #[template_child]
+    // pub collection_list: TemplateChild<ListBox>,
     #[template_child]
     pub food_list: TemplateChild<ListBox>,
     #[template_child]
