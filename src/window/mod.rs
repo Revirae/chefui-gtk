@@ -289,7 +289,7 @@ impl ChefApp {
 
         let filename = "./chef.sqlite".to_owned();
         let store = Store::load_or_init(filename)
-            .expect("faile do load or init store");
+            .expect("failed do load or init store");
         app.store
             .set(store)
             .expect("failed to setup database");

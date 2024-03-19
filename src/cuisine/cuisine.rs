@@ -64,7 +64,10 @@ impl super::Store {
                 Ok(Food {
                     name: row.get(1)?,
                     brand: row.get(2)?,
-                    ..Default::default()
+                    cost: row.get(3)?,
+                    weight: row.get(4)?,
+                    volume: row.get(5)?,
+                    // ..Default::default()
                 })
             },
         )?
