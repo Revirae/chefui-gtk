@@ -6,7 +6,7 @@ use adw::subclass::prelude::*;
 use gtk::gio::{ActionGroup, ActionMap, ListStore};
 use gtk::glib::Object;
 use gtk::glib::{clone, wrapper};
-use gtk::{glib, Label};
+use gtk::{glib, Label, ListBox};
 use gtk::{
     Accessible, Box, Buildable, ConstraintTarget,
     CustomFilter, FilterListModel, Native,
@@ -155,14 +155,32 @@ impl ChefApp {
     ) -> adw::ActionRow {
         let content = Box::builder().build();
 
-        let label_cost = Label::builder().build();
-        content.append(&label_cost);
+        // let label_cost = Label::builder().build();
+        // content.append(&label_cost);
 
-        let label_weight = Label::builder().build();
-        content.append(&label_weight);
+        let widget_cost = gtk::Box::builder().build();
+        let widget_cost_row =
+            adw::ActionRow::builder()
+                .subtitle("$")
+                .build();
+        widget_cost.append(&widget_cost_row);
+        content.append(&widget_cost);
 
-        let label_volume = Label::builder().build();
-        content.append(&label_volume);
+        let widget_weight = Box::builder().build();
+        let widget_weight_row =
+            adw::ActionRow::builder()
+                .subtitle("grama")
+                .build();
+        widget_weight.append(&widget_weight_row);
+        content.append(&widget_weight);
+
+        let widget_volume = Box::builder().build();
+        let widget_volume_row =
+            adw::ActionRow::builder()
+                .subtitle("ml")
+                .build();
+        widget_volume.append(&widget_volume_row);
+        content.append(&widget_volume);
 
         let row = adw::ActionRow::builder().build();
         row.add_suffix(&content);
@@ -180,8 +198,8 @@ impl ChefApp {
         food_object
             .bind_property(
                 "cost",
-                &label_cost,
-                "label",
+                &widget_cost_row,
+                "title",
             )
             .sync_create()
             .build();
@@ -189,8 +207,8 @@ impl ChefApp {
         food_object
             .bind_property(
                 "weight",
-                &label_weight,
-                "label",
+                &widget_weight_row,
+                "title",
             )
             .sync_create()
             .build();
@@ -198,8 +216,8 @@ impl ChefApp {
         food_object
             .bind_property(
                 "volume",
-                &label_volume,
-                "label",
+                &widget_volume_row,
+                "title",
             )
             .sync_create()
             .build();
