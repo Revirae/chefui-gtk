@@ -48,6 +48,7 @@
                     </child>
                     <child>
                       <object class="GtkListBox" id="food_list">
+                        <property name="width-request">400</property>
                         <style>
                           <class name="boxed-list" />
                         </style>

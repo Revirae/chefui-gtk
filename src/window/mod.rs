@@ -153,20 +153,28 @@ impl ChefApp {
         &self,
         food_object: &FoodObject,
     ) -> adw::ActionRow {
-        let content = Box::builder().build();
+        let content = Box::builder()
+            .hexpand(true)
+            .halign(gtk::Align::Center)
+            .build();
 
         // let label_cost = Label::builder().build();
         // content.append(&label_cost);
 
-        let widget_cost = gtk::Box::builder().build();
+        let widget_cost = gtk::Box::builder()
+            .halign(gtk::Align::Start)
+            .width_request(48)
+            .build();
         let widget_cost_row =
             adw::ActionRow::builder()
                 .subtitle("$")
+                .halign(gtk::Align::Start)
                 .build();
         widget_cost.append(&widget_cost_row);
         content.append(&widget_cost);
 
-        let widget_weight = Box::builder().build();
+        let widget_weight =
+            Box::builder().width_request(150).build();
         let widget_weight_row =
             adw::ActionRow::builder()
                 .subtitle("grama")
@@ -174,15 +182,20 @@ impl ChefApp {
         widget_weight.append(&widget_weight_row);
         content.append(&widget_weight);
 
-        let widget_volume = Box::builder().build();
+        let widget_volume = Box::builder()
+            .halign(gtk::Align::Center)
+            .build();
         let widget_volume_row =
             adw::ActionRow::builder()
                 .subtitle("ml")
+                .halign(gtk::Align::Center)
                 .build();
         widget_volume.append(&widget_volume_row);
         content.append(&widget_volume);
 
-        let row = adw::ActionRow::builder().build();
+        let row = adw::ActionRow::builder()
+            .halign(gtk::Align::BaselineFill)
+            .build();
         row.add_suffix(&content);
 
         food_object
