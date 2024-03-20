@@ -40,8 +40,17 @@
                           </object>
                         </child>
                         <child>
-                          <object class="GtkButton" id="button_submit">
-                            <property name="label">submit</property>
+                          <object class="GtkBox">
+                            <child>
+                              <object class="GtkButton" id="button_submit">
+                                <property name="label">registrar</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkButton" id="button_clear">
+                                <property name="label">limpar</property>
+                              </object>
+                            </child>
                           </object>
                         </child>
                       </object>

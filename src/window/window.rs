@@ -30,11 +30,16 @@ pub struct ChefApp {
     pub entry_volume: TemplateChild<adw::EntryRow>,
     #[template_child]
     pub button_submit: TemplateChild<Button>,
+    #[template_child]
+    pub button_clear: TemplateChild<Button>,
     //----
     pub collections: OnceCell<ListStore>,
     pub main_fc: RefCell<Option<FoodCollection>>,
     //-----
     pub store: OnceCell<Store>,
+    //-----
+    pub update_mode: OnceCell<bool>,
+    pub update_key: OnceCell<String>,
 }
 
 #[gtk::template_callbacks]
@@ -74,6 +79,8 @@ impl ObjectImpl for ChefApp {
     fn constructed(&self) {
         self.parent_constructed();
         let obj = self.obj();
+
+        let _ = self.update_mode.set(false);
         obj.setup_database();
         obj.load_database();
         obj.setup_collections();
