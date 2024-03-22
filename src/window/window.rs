@@ -8,6 +8,7 @@ use gtk::{glib, Button, ListBox, Stack};
 
 use crate::collection::FoodCollection;
 use crate::cuisine::Store;
+use crate::food::FoodObject;
 
 #[derive(gtk::CompositeTemplate, Default)]
 #[template(resource = "/org/gtk_rs/chef/chef.xml")]
@@ -38,8 +39,8 @@ pub struct ChefApp {
     //-----
     pub store: OnceCell<Store>,
     //-----
-    pub update_mode: OnceCell<bool>,
-    pub update_key: OnceCell<String>,
+    pub update_mode: RefCell<bool>,
+    pub update_key: RefCell<Option<FoodObject>>,
 }
 
 #[gtk::template_callbacks]
@@ -80,7 +81,7 @@ impl ObjectImpl for ChefApp {
         self.parent_constructed();
         let obj = self.obj();
 
-        let _ = self.update_mode.set(false);
+        // self.update_mode.set(false).unwrap();
         obj.setup_database();
         obj.load_database();
         obj.setup_collections();

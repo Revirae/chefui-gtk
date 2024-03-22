@@ -6,7 +6,7 @@ use adw::subclass::prelude::*;
 use gtk::gio::{ActionGroup, ActionMap, ListStore};
 use gtk::glib::Object;
 use gtk::glib::{clone, wrapper};
-use gtk::{glib, Button, Label, ListBox};
+use gtk::{glib, Button};
 use gtk::{
     Accessible, Box, Buildable, ConstraintTarget, CustomFilter, FilterListModel, Native,
     NoSelection, ShortcutManager,
@@ -60,7 +60,8 @@ impl ChefApp {
             w.set_text("");
         }
 
-        let _ = app.update_mode.set(false);
+        // let _ = app.update_mode.set(false);
+        app.update_mode.replace(false);
         app.button_submit.set_label("registrar");
     }
     fn new_food(&self) {
@@ -77,7 +78,7 @@ impl ChefApp {
 
         let cost: String = app.entry_cost.text().into();
         let cost: f32 = cost.parse().unwrap_or_default();
-        let cost: u32 = (cost * 100.) as u32;
+        let cost: u32 = (cost * 1.) as u32;
 
         let weight: String = app.entry_weight.text().into();
         let weight: u32 = weight.parse().unwrap_or_default();
@@ -87,14 +88,48 @@ impl ChefApp {
 
         app.entry_cost.set_text("");
 
-        let new_food = FoodObject::new(name, brand, cost, weight, volume);
-        self.foodlist().append(&new_food);
+        let new_food = FoodObject::new(
+            name.clone(),
+            brand.clone(),
+            cost,
+            weight,
+            volume,
+            true,
+            false
+        );
+
+        // let is_updating = *app.update_mode.get().unwrap();
+        let is_updating: bool = app.update_mode.clone().into_inner();
+        dbg!(is_updating);
+        if is_updating {
+            let target = app.update_key.clone().into_inner().unwrap();
+            if let Some(i) = self.foodlist().find(&target) {
+                if let Some(obj) = self.foodlist().item(i) {
+                    let food: &FoodObject = obj
+                        .downcast_ref::<FoodObject>()
+                        .expect("todo");
+                    food.set_name(name);
+                    food.set_brand(brand);
+                    food.set_cost(cost);
+                    food.set_weight(weight);
+                    food.set_volume(volume);
+                    food.set_mustupdate(true);
+                }
+            }
+            // let _ = app.update_mode.set(false);
+            // app.update_mode = false;
+            app.update_mode.replace(false);
+            
+        } else {
+            self.foodlist().append(&new_food);
+        }
     }
 
     fn update_food(&self, obj: &FoodObject) {
         let app = self.imp();
 
-        let _ = app.update_key.set(obj.name());
+        // let _ = app.update_key.set(obj.clone());
+        app.update_key.replace(Some(obj.clone()));
 
         app.entry_name.set_text(&obj.name());
         app.entry_brand.set_text(&obj.brand());
@@ -108,7 +143,10 @@ impl ChefApp {
         let volume = format!("{}", obj.volume());
         app.entry_volume.set_text(&volume);
 
-        let _ = app.update_mode.set(true);
+        // let _ = app.update_mode.set(true);
+        app.update_mode.replace(true);
+        // app.update_mode = true;
+        dbg!(app.update_mode.borrow());
         app.button_submit.set_label("atualizar");
     }
 
@@ -309,8 +347,9 @@ impl ChefApp {
     pub fn setup(&self) {
         let app = self.imp();
 
-        // self.new_collection();
         app.stack.set_visible_child_name("main");
+        // app.update_mode.set(false).expect("todo");
+        app.update_mode.replace(false);
 
         app.food_list
             .connect_row_selected(clone!(@weak self as window => move |_, row| {
@@ -321,6 +360,7 @@ impl ChefApp {
                     .downcast::<FoodObject>()
                     .expect("the object needs to be a `FoodObject`");
                 // todo!()
+
                 window.update_food(&selected_food);
                 // println!("...");
 

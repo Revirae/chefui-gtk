@@ -18,6 +18,8 @@ impl FoodObject {
         cost: u32,
         weight: u32,
         volume: u32,
+        mustcreate: bool,
+        mustupdate: bool,
     ) -> Self {
         Object::builder()
             .property("name", name)
@@ -25,6 +27,8 @@ impl FoodObject {
             .property("cost", cost)
             .property("weight", weight)
             .property("volume", volume)
+            .property("mustcreate", mustcreate)
+            .property("mustupdate", mustupdate)
             .build()
     }
     pub fn data(&self) -> Food {
@@ -37,6 +41,8 @@ impl FoodObject {
             data.cost,
             data.weight,
             data.volume,
+            data.mustcreate,
+            data.mustupdate
         )
     }
 }
@@ -52,6 +58,8 @@ pub struct Food {
     pub cost: u32,
     pub weight: u32,
     pub volume: u32,
+    pub mustcreate: bool,
+    pub mustupdate: bool,
 }
 
 impl Food {

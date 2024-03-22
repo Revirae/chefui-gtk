@@ -32,18 +32,22 @@ impl super::Store {
         let tx = link.transaction()?;
 
         for food in collection.foodlist {
-            tx.execute(
-                "insert into food (
-                name, brand, cost, weight, volume
-                ) values (?1, ?2, ?3, ?4, ?5)",
-                rusqlite::params![
-                    food.name,
-                    food.brand,
-                    food.cost,
-                    food.weight,
-                    food.volume
-                ],
-            )?;
+            if food.mustcreate {
+                tx.execute(
+                    "insert into food (
+                    name, brand, cost, weight, volume
+                    ) values (?1, ?2, ?3, ?4, ?5)",
+                    rusqlite::params![
+                        food.name,
+                        food.brand,
+                        food.cost,
+                        food.weight,
+                        food.volume
+                    ],
+                )?;
+            } else if food.mustupdate {
+                todo!("")
+            }
         }
         tx.commit()?;
         Ok(())
@@ -67,7 +71,7 @@ impl super::Store {
                     cost: row.get(3)?,
                     weight: row.get(4)?,
                     volume: row.get(5)?,
-                    // ..Default::default()
+                    ..Default::default()
                 })
             },
         )?
