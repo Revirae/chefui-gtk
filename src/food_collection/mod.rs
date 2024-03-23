@@ -1,4 +1,4 @@
-mod co;
+mod food_collection;
 
 use adw::prelude::*;
 use adw::subclass::prelude::*;
@@ -9,9 +9,10 @@ use gtk::{
 use serde::{Deserialize, Serialize};
 
 use crate::food::{Food, FoodObject};
+// use super::FoodCollection;
 
 glib::wrapper! {
-    pub struct FoodCollection(ObjectSubclass<co::FoodCollection>);
+    pub struct FoodCollection(ObjectSubclass<food_collection::FoodCollection>);
 }
 
 impl FoodCollection {

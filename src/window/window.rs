@@ -8,7 +8,7 @@ use gtk::glib::subclass::InitializingObject;
 use gtk::{glib, Button, ListBox, Stack};
 
 use crate::action::Action;
-use crate::collection::FoodCollection;
+use crate::food_collection::FoodCollection;
 use crate::cuisine::Store;
 use crate::food::FoodObject;
 

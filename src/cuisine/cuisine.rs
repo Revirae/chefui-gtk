@@ -4,8 +4,9 @@
 use std::collections::HashMap;
 // use std::iter::Map;
 
-use crate::collection::FoodCollectionData;
-use crate::food::{Food, Ingredient};
+use crate::food_collection::FoodCollectionData;
+use crate::food::Food;
+use crate::ingredient::IngredientData;
 use crate::action::Action;
 
 impl super::Store {
