@@ -12,6 +12,7 @@ use gtk::{
     NoSelection, ShortcutManager,
 };
 
+use crate::action::Action;
 use crate::collection::FoodCollection;
 use crate::cuisine::Store;
 use crate::food::FoodObject;
@@ -93,9 +94,9 @@ impl ChefApp {
             brand.clone(),
             cost,
             weight,
-            volume,
-            true,
-            false
+            volume
+            // true,
+            // false
         );
 
         // let is_updating = *app.update_mode.get().unwrap();
@@ -105,20 +106,26 @@ impl ChefApp {
             let target = app.update_key.clone().into_inner().unwrap();
             if let Some(i) = self.foodlist().find(&target) {
                 if let Some(obj) = self.foodlist().item(i) {
+                               
                     let food: &FoodObject = obj
                         .downcast_ref::<FoodObject>()
                         .expect("todo");
+                    let key = food.name();
                     food.set_name(name);
                     food.set_brand(brand);
                     food.set_cost(cost);
                     food.set_weight(weight);
                     food.set_volume(volume);
-                    food.set_mustupdate(true);
+                    // food.set_mustupdate(true);
+                    app.commits
+                        .borrow_mut()
+                        .push(Action::Update(key, food.data()));
                 }
             }
             // let _ = app.update_mode.set(false);
             // app.update_mode = false;
             app.update_mode.replace(false);
+            app.button_submit.set_label("registrar");//todo
             
         } else {
             self.foodlist().append(&new_food);

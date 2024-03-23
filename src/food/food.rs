@@ -5,6 +5,7 @@ use gtk::glib;
 use gtk::prelude::*;
 // use gtk::subclass::prelude::*;
 use adw::subclass::prelude::*;
+// use super::Action;
 use super::Food;
 
 #[derive(Properties, Default)]
@@ -15,8 +16,8 @@ pub struct FoodObject {
     #[property(name = "cost", get, set, type = u32, member = cost)]
     #[property(name = "weight", get, set, type = u32, member = weight)]
     #[property(name = "volume", get, set, type = u32, member = volume)]
-    #[property(name = "mustcreate", get, set, type = bool, member = mustcreate)]
-    #[property(name = "mustupdate", get, set, type = bool, member = mustupdate)]
+    // #[property(name = "action", get, set, type = Action, member = action)]
+
     pub data: RefCell<Food>,
 }
 
@@ -29,8 +30,3 @@ impl adw::glib::subclass::prelude::ObjectSubclass for FoodObject {
 #[glib::derived_properties]
 impl adw::glib::subclass::prelude::ObjectImpl for FoodObject {}
 
-// #[glib::derived_properties]
-// impl ObjectImpl for FoodObject {
-    
-// }
-// impl adw::glib::Object

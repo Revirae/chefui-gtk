@@ -1,4 +1,5 @@
 use std::cell::{OnceCell, RefCell};
+// use std::collections::HashMap;
 
 use adw::prelude::*;
 use adw::subclass::prelude::*;
@@ -6,6 +7,7 @@ use gtk::gio::ListStore;
 use gtk::glib::subclass::InitializingObject;
 use gtk::{glib, Button, ListBox, Stack};
 
+use crate::action::Action;
 use crate::collection::FoodCollection;
 use crate::cuisine::Store;
 use crate::food::FoodObject;
@@ -41,6 +43,8 @@ pub struct ChefApp {
     //-----
     pub update_mode: RefCell<bool>,
     pub update_key: RefCell<Option<FoodObject>>,
+
+    pub commits: RefCell<Vec<Action>>,
 }
 
 #[gtk::template_callbacks]
@@ -101,20 +105,25 @@ impl ObjectImpl for ChefApp {
 
 impl WidgetImpl for ChefApp {}
 
-impl AdwWindowImpl for ChefApp {}
+impl AdwWindowImpl for ChefApp {
+    
+}
 impl WindowImpl for ChefApp {
     fn close_request(&self) -> glib::Propagation {
+        // dbg!("close_request!");
         let store = self
             .store
             .get()
             .expect("failed to retrieve store");
 
+        dbg!("supposed to be working main_fc");
         if let Some(foodlist) =
             self.main_fc.clone().into_inner()
         {
             let _ = store
                 .send_food(
                     foodlist.to_collection_data(),
+                    &self.commits.borrow()
                 )
                 .is_err_and(|e| {
                     eprintln!("{:?}", e);

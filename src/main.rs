@@ -3,6 +3,7 @@ mod collection;
 mod cuisine;
 mod food;
 mod window;
+mod action;
 
 use adw::prelude::*;
 use adw::Application;

@@ -1,14 +1,20 @@
 #![allow(dead_code)]
 #![allow(unused_imports)]
 
+use std::collections::HashMap;
+// use std::iter::Map;
+
 use crate::collection::FoodCollectionData;
 use crate::food::{Food, Ingredient};
+use crate::action::Action;
 
 impl super::Store {
     pub fn load_or_init(
         filename: String,
     ) -> rusqlite::Result<Self> {
-        let store = super::Store { filename };
+        let store = super::Store {
+            filename,
+        };
 
         store.link()?.execute(
             "create table if not exists food (
@@ -27,26 +33,53 @@ impl super::Store {
     pub fn send_food(
         &self,
         collection: FoodCollectionData,
+        commits: &Vec<Action>
     ) -> Result<(), rusqlite::Error> {
         let mut link = self.link()?;
         let tx = link.transaction()?;
 
-        for food in collection.foodlist {
-            if food.mustcreate {
-                tx.execute(
-                    "insert into food (
-                    name, brand, cost, weight, volume
-                    ) values (?1, ?2, ?3, ?4, ?5)",
-                    rusqlite::params![
-                        food.name,
-                        food.brand,
-                        food.cost,
-                        food.weight,
-                        food.volume
-                    ],
-                )?;
-            } else if food.mustupdate {
-                todo!("")
+        for action in commits.iter() {
+            dbg!(action, collection.foodlist.clone());
+            // dbg!(food);
+            match action {
+                Action::Create(food) => {
+                    tx.execute(
+                        "insert into food (
+                        name, brand, cost, weight, volume
+                        ) values (?1, ?2, ?3, ?4, ?5)",
+                        rusqlite::params![
+                            food.name,
+                            food.brand,
+                            food.cost,
+                            food.weight,
+                            food.volume
+                        ],
+                    )?;
+                },
+                Action::Update(name, food) => {
+                        dbg!(name, food);
+                        tx.execute(
+                            "update food set 
+                            name = ?1,
+                            brand = ?2,
+                            cost = ?3,
+                            weight = ?4,
+                            volume = ?5  
+                             where name = ?6",
+                            rusqlite::params![
+                                food.name,
+                                food.brand,
+                                food.cost,
+                                food.weight,
+                                food.volume,
+                                name
+                            ]
+                        )?;
+                    }               
+                _ => {
+                    dbg!("Unresolved action evoqued");
+                }
+                
             }
         }
         tx.commit()?;

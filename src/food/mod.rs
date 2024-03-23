@@ -10,7 +10,6 @@ glib::wrapper! {
     pub struct FoodObject(ObjectSubclass<food::FoodObject>);
 }
 
-// let a = ObjectSubclass
 impl FoodObject {
     pub fn new(
         name: String,
@@ -18,8 +17,6 @@ impl FoodObject {
         cost: u32,
         weight: u32,
         volume: u32,
-        mustcreate: bool,
-        mustupdate: bool,
     ) -> Self {
         Object::builder()
             .property("name", name)
@@ -27,8 +24,6 @@ impl FoodObject {
             .property("cost", cost)
             .property("weight", weight)
             .property("volume", volume)
-            .property("mustcreate", mustcreate)
-            .property("mustupdate", mustupdate)
             .build()
     }
     pub fn data(&self) -> Food {
@@ -41,25 +36,27 @@ impl FoodObject {
             data.cost,
             data.weight,
             data.volume,
-            data.mustcreate,
-            data.mustupdate
+            // data.mustcreate,
+            // data.mustupdate
         )
     }
 }
+
 
 pub enum Ingredient {
     FoodPortion(Food, usize),
 }
 
-#[derive(Default, Clone, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, Serialize, Deserialize)]
 pub struct Food {
     pub name: String,
     pub brand: String,
     pub cost: u32,
     pub weight: u32,
     pub volume: u32,
-    pub mustcreate: bool,
-    pub mustupdate: bool,
+    // pub action: Action,
+    // pub mustcreate: bool,
+    // pub mustupdate: bool,
 }
 
 impl Food {
