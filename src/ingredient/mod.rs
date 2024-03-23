@@ -10,10 +10,6 @@ glib::wrapper! {
     pub struct IngredientObject(ObjectSubclass<ingredient::IngredientObject>);
 }
 
-// pub enum IngredientKind {
-    // FoodPortion(Food, usize),
-// }
-
 impl IngredientObject {
     pub fn new(
         name: String,

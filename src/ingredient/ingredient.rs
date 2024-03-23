@@ -6,6 +6,10 @@ use gtk::prelude::*;
 use adw::subclass::prelude::*;
 use super::IngredientData;
 
+pub trait IngredientImpl {
+ // FoodPortion(Food, usize),
+}
+
 #[derive(Properties, Default)]
 #[properties(wrapper_type = super::IngredientObject)]
 pub struct IngredientObject {

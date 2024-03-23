@@ -3,6 +3,7 @@ mod food_collection;
 mod ingredient_collection;
 mod cuisine;
 mod food;
+mod recipe;
 mod ingredient;
 mod window;
 mod action;

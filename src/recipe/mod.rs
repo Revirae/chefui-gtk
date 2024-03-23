@@ -1,4 +1,4 @@
-mod ingredient_collection;
+mod recipe;
 
 use adw::prelude::*;
 use adw::subclass::prelude::*;
@@ -8,13 +8,17 @@ use gtk::{
 };
 use serde::{Deserialize, Serialize};
 
-use crate::ingredient::{IngredientData, IngredientObject};
+// use crate::food::{Food, FoodObject};
+use crate::{
+    ingredient::{IngredientData, IngredientObject},
+    // recipe::RecipeObject
+};
 
 glib::wrapper! {
-    pub struct IngredientCollection(ObjectSubclass<ingredient_collection::IngredientCollection>);
+    pub struct Recipe(ObjectSubclass<recipe::Recipe>);
 }
 
-impl IngredientCollection {
+impl Recipe {
     pub fn new(
         name: &str,
         ingredientlist: gio::ListStore,
@@ -26,18 +30,18 @@ impl IngredientCollection {
     }
     pub fn to_collection_data(
         &self,
-    ) -> IngredientCollectionData {
+    ) -> RecipeData {
         let name = self.imp().name.borrow().clone();
         let ingredientlist = self
             .ingredientlist()
             .iter::<IngredientObject>()
             .filter_map(Result::ok)
-            .map(|ingredient_object| ingredient_object.data())
+            .map(|food_object| food_object.data())
             .collect();
-        IngredientCollectionData { name, ingredientlist }
+        RecipeData { name, ingredientlist }
     }
     pub fn from_collection_data(
-        data: IngredientCollectionData,
+        data: RecipeData,
     ) -> Self {
         let name = data.name;
         let ingredient_to_extend: Vec<IngredientObject> = data
@@ -54,7 +58,7 @@ impl IngredientCollection {
 }
 
 #[derive(Default, Clone, Serialize, Deserialize)]
-pub struct IngredientCollectionData {
+pub struct RecipeData {
     pub name: String,
     pub ingredientlist: Vec<IngredientData>,
 }
