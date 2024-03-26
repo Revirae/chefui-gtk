@@ -2,22 +2,26 @@
 #![allow(unused_imports)]
 
 use std::collections::HashMap;
-// use std::iter::Map;
 
 use crate::food_collection::FoodCollectionData;
 use crate::food::Food;
 use crate::ingredient::IngredientData;
 use crate::action::Action;
 
-impl super::Store {
-    pub fn load_or_init(
-        filename: String,
-    ) -> rusqlite::Result<Self> {
-        let store = super::Store {
-            filename,
-        };
+impl super::IngredientStore {
+    pub fn load_or_init(_cuisine: &super::Cuisine) -> rusqlite::Result<Self> {
+        // let store = super::IngredientStore {};
 
-        store.link()?.execute(
+         // cuisine.link()?.execute()
+         Ok(super::IngredientStore {  })
+    }
+}
+
+impl super::FoodStore {
+    pub fn load_or_init(cuisine: &super::Cuisine) -> rusqlite::Result<Self> {
+        // let store = super::FoodStore {};
+
+        cuisine.link()?.execute(
             "create table if not exists food (
                 id integer primary key,
                 name text not null unique,
@@ -29,14 +33,15 @@ impl super::Store {
             (),
         )?;
 
-        Ok(store)
+        Ok(super::FoodStore {  })
     }
     pub fn send_food(
         &self,
+        cuisine: &super::Cuisine,
         collection: FoodCollectionData,
         commits: &Vec<Action>
     ) -> Result<(), rusqlite::Error> {
-        let mut link = self.link()?;
+        let mut link = cuisine.link()?;
         let tx = link.transaction()?;
 
         for action in commits.iter() {
@@ -88,8 +93,9 @@ impl super::Store {
     }
     pub fn get_food(
         &self,
+        cuisine: &super::Cuisine,
     ) -> rusqlite::Result<FoodCollectionData> {
-        let link = self.link()?;
+        let link = cuisine.link()?;
 
         let mut stmt =
             link.prepare("SELECT * FROM food")?;

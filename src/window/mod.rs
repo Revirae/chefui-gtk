@@ -14,7 +14,7 @@ use gtk::{
 
 use crate::action::Action;
 use crate::food_collection::FoodCollection;
-use crate::cuisine::Store;
+use crate::cuisine::{Cuisine, FoodStore};
 use crate::food::FoodObject;
 
 wrapper! {
@@ -42,7 +42,7 @@ impl ChefApp {
 
     pub fn collections(&self) -> ListStore {
         let app = self.imp();
-        app.collections
+        app.food_collections
             .get()
             .expect("`collections` should be set in `setup_collections`")
             .clone()
@@ -61,8 +61,8 @@ impl ChefApp {
             w.set_text("");
         }
 
-        // let _ = app.update_mode.set(false);
-        app.update_mode.replace(false);
+        // let _ = app.food_mode.set(false);
+        app.food_mode.replace(false);
         app.button_submit.set_label("registrar");
     }
     fn new_food(&self) {
@@ -99,8 +99,8 @@ impl ChefApp {
             // false
         );
 
-        // let is_updating = *app.update_mode.get().unwrap();
-        let is_updating: bool = app.update_mode.clone().into_inner();
+        // let is_updating = *app.food_mode.get().unwrap();
+        let is_updating: bool = app.food_mode.clone().into_inner();
         dbg!(is_updating);
         if is_updating {
             let target = app.update_key.clone().into_inner().unwrap();
@@ -122,9 +122,9 @@ impl ChefApp {
                         .push(Action::Update(key, food.data()));
                 }
             }
-            // let _ = app.update_mode.set(false);
-            // app.update_mode = false;
-            app.update_mode.replace(false);
+            // let _ = app.food_mode.set(false);
+            // app.food_mode = false;
+            app.food_mode.replace(false);
             app.button_submit.set_label("registrar");//todo
             
         } else {
@@ -150,10 +150,10 @@ impl ChefApp {
         let volume = format!("{}", obj.volume());
         app.entry_volume.set_text(&volume);
 
-        // let _ = app.update_mode.set(true);
-        app.update_mode.replace(true);
-        // app.update_mode = true;
-        dbg!(app.update_mode.borrow());
+        // let _ = app.food_mode.set(true);
+        app.food_mode.replace(true);
+        // app.food_mode = true;
+        dbg!(app.food_mode.borrow());
         app.button_submit.set_label("atualizar");
     }
 
@@ -177,32 +177,9 @@ impl ChefApp {
         row
     }
 
-    // fn create_food_row(
-    //     &self,
-    //     food_object: &FoodObject,
-    // ) -> adw::ActionRow {
-    //     let row = adw::ActionRow::builder().build();
-
-    //     food_object
-    //         .bind_property("name", &row, "name")
-    //         .sync_create()
-    //         .build();
-
-    //     row
-    // }
-
     fn setup_collections(&self) {
         let app = self.imp();
-        // let collections =
-        // ListStore::new::<FoodCollection>();
-
-        // let collection =
-        // app.main_fc.borrow().unwrap();
-        // let collection = app.main_fc.into_inner();
         let collection = self.foodlist();
-        // app.collections
-        // .set(collections.clone())
-        // .expect("failed to set collections");
 
         app.food_list.bind_model(
             Some(&collection),
@@ -321,42 +298,54 @@ impl ChefApp {
         None
     }
 
+    pub fn setup_cuisine(&self) {
+        let app = self.imp();
+        app.cuisine
+            .set(Cuisine {})
+            .expect("failed to set up cuisine");
+    }
+
     pub fn setup_database(&self) {
         let app = self.imp();
 
-        let filename = "./chef.sqlite".to_owned();
-        let store = Store::load_or_init(filename).expect("failed do load or init store");
-        app.store.set(store).expect("failed to setup database");
+        let cuisine = app.cuisine
+            .get()
+            .expect("trying to set up database with bad cuisine");
+
+        let food_store = FoodStore::load_or_init(&cuisine).expect("failed do load or init store");
+        app.food_store.set(food_store).expect("failed to setup food_store");
     }
 
     pub fn load_database(&self) {
         let app = self.imp();
 
-        let store = app.store.get().expect(
+        let food_store = app.food_store.get().expect(
             "failed to get store to load database, 
             was database set up before loading?",
         );
 
-        let collections = ListStore::new::<FoodCollection>();
+        let cuisine = app.cuisine.get().unwrap();
 
-        if let Ok(data) = store.get_food() {
+        let food_collections = ListStore::new::<FoodCollection>();
+
+        if let Ok(data) = food_store.get_food(&cuisine) {
             let collection = FoodCollection::from_collection_data(data);
             // self.collections()
-            collections.append(&collection);
+            food_collections.append(&collection);
             self.set_current_collection(collection);
         }
 
-        app.collections
-            .set(collections.clone())
-            .expect("failed to set collections");
+        app.food_collections
+            .set(food_collections.clone())
+            .expect("failed to set food collections");
     }
 
     pub fn setup(&self) {
         let app = self.imp();
 
-        app.stack.set_visible_child_name("main");
-        // app.update_mode.set(false).expect("todo");
-        app.update_mode.replace(false);
+        // app.stack.set_visible_child_name("main");
+        // app.food_mode.set(false).expect("todo");
+        app.food_mode.replace(false);
 
         app.food_list
             .connect_row_selected(clone!(@weak self as window => move |_, row| {

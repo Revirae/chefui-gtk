@@ -1,23 +1,26 @@
 mod cuisine;
-// mod action;
-
-// use std::iter::Map
-
-// use std::collections::HashMap;
-
 use rusqlite::Connection;
 
-// use crate::action::Action;
+const DBFN: &'static str = "./chef.sqlite";
 
-#[derive(Debug, Clone)]
-pub struct Store {
-    pub filename: String,
+#[derive(Debug)]
+pub struct Cuisine {
+    
 }
 
-impl Store {
+#[derive(Debug, Clone)]
+pub struct FoodStore {
+}
+
+#[derive(Debug, Clone)]
+pub struct IngredientStore {
+    
+}
+
+impl Cuisine {
     fn link(
         &self,
     ) -> Result<Connection, rusqlite::Error> {
-        Connection::open(self.filename.clone())
+        Connection::open(DBFN)
     }
 }

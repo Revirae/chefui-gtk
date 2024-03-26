@@ -1,6 +1,7 @@
 #![allow(dead_code)]
 mod food_collection;
 mod ingredient_collection;
+mod recipe_collection;
 mod cuisine;
 mod food;
 mod recipe;

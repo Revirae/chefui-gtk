@@ -1,24 +1,26 @@
+use crate::recipe_collection::RecipeCollection;
 use std::cell::{OnceCell, RefCell};
-// use std::collections::HashMap;
 
 use adw::prelude::*;
 use adw::subclass::prelude::*;
 use gtk::gio::ListStore;
 use gtk::glib::subclass::InitializingObject;
-use gtk::{glib, Button, ListBox, Stack};
+use gtk::{glib, Button, ListBox};
 
 use crate::action::Action;
 use crate::food_collection::FoodCollection;
-use crate::cuisine::Store;
+use crate::cuisine::{Cuisine, FoodStore, IngredientStore};
 use crate::food::FoodObject;
+
+// pub enum FoodMode { }
 
 #[derive(gtk::CompositeTemplate, Default)]
 #[template(resource = "/org/gtk_rs/chef/chef.xml")]
-pub struct ChefApp {
+pub struct ChefApp{
     #[template_child]
-    pub stack: TemplateChild<Stack>,
+    pub main_stack: TemplateChild<adw::ViewStack>,
     // #[template_child]
-    // pub collection_list: TemplateChild<ListBox>,
+    // pub recipe_list: TemplateChild<ListBox>,
     #[template_child]
     pub food_list: TemplateChild<ListBox>,
     #[template_child]
@@ -36,12 +38,16 @@ pub struct ChefApp {
     #[template_child]
     pub button_clear: TemplateChild<Button>,
     //----
-    pub collections: OnceCell<ListStore>,
+    pub food_collections: OnceCell<ListStore>,
+    pub ingredient_collections: OnceCell<ListStore>,
     pub main_fc: RefCell<Option<FoodCollection>>,
+    pub main_rc: RefCell<Option<RecipeCollection>>,
     //-----
-    pub store: OnceCell<Store>,
+    pub cuisine: OnceCell<Cuisine>,
+    pub food_store: OnceCell<FoodStore>,
+    pub recipe_store: OnceCell<IngredientStore>,
     //-----
-    pub update_mode: RefCell<bool>,
+    pub food_mode: RefCell<bool>,
     pub update_key: RefCell<Option<FoodObject>>,
 
     pub commits: RefCell<Vec<Action>>,
@@ -86,6 +92,7 @@ impl ObjectImpl for ChefApp {
         let obj = self.obj();
 
         // self.update_mode.set(false).unwrap();
+        obj.setup_cuisine();
         obj.setup_database();
         obj.load_database();
         obj.setup_collections();
@@ -110,9 +117,9 @@ impl AdwWindowImpl for ChefApp {
 }
 impl WindowImpl for ChefApp {
     fn close_request(&self) -> glib::Propagation {
-        // dbg!("close_request!");
-        let store = self
-            .store
+        let cuisine = self.cuisine.get().unwrap();
+        let food_store = self
+            .food_store
             .get()
             .expect("failed to retrieve store");
 
@@ -120,8 +127,9 @@ impl WindowImpl for ChefApp {
         if let Some(foodlist) =
             self.main_fc.clone().into_inner()
         {
-            let _ = store
+            let _ = food_store
                 .send_food(
+                    &cuisine,
                     foodlist.to_collection_data(),
                     &self.commits.borrow()
                 )

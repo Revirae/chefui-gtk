@@ -13,7 +13,9 @@ pub trait IngredientImpl {
 #[derive(Properties, Default)]
 #[properties(wrapper_type = super::IngredientObject)]
 pub struct IngredientObject {
+    #[property(name = "kind", get, set, type = String, member = kind)]
     #[property(name = "name", get, set, type = String, member = name)]
+    #[property(name = "amount", get, set, type = u32, member = amount)]
 
     pub data: RefCell<IngredientData>,
 }
